@@ -23,6 +23,12 @@ const Accueil = () => {
   const [selectedElement, setSelectedElement] = useState(null); // Élément sélectionné
   const [error, setError] = useState(null);
 
+  const [newExploitationName, setNewExploitationName] = useState(""); // Nouveau nom pour exploitation
+  const [newElementName, setNewElementName] = useState(""); // Nouveau nom pour élément
+  const [newElementQuantity, setNewElementQuantity] = useState(0); // Quantité de l'élément
+  const [newProductionQuantity, setNewProductionQuantity] = useState(0); // Quantité de production
+  const [newProductionDate, setNewProductionDate] = useState(""); // Date de production
+
   useEffect(() => {
     // Récupérer les informations de l'utilisateur
     const fetchUser = async () => {
@@ -113,6 +119,56 @@ const Accueil = () => {
     setProductions([]);
   };
 
+  // Créer une exploitation
+  const createExploitation = async () => {
+    try {
+      const response = await axios.post("http://127.0.0.1:5005/exploitations", {
+        type_exploitation_id: 1, // exemple d'ID
+        domaine_id: selectedDomain, // domaine sélectionné
+        nom_exploitation: newExploitationName,
+      });
+      console.log("Exploitation créée", response.data);
+      fetchExploitations(selectedDomain); // Rafraîchir la liste des exploitations
+      setNewExploitationName(""); // Réinitialiser le champ de saisie
+    } catch (err) {
+      console.error("Erreur lors de la création de l'exploitation:", err);
+    }
+  };
+
+  // Créer un élément
+  const createElement = async () => {
+    try {
+      const response = await axios.post(`http://127.0.0.1:8080/elements/${selectedExploitation}`, {
+        exploitation_id: selectedExploitation, // exploitation sélectionnée
+        nom_element: newElementName,
+        quantite: newElementQuantity,
+      });
+      console.log("Élément créé", response.data);
+      fetchElements(selectedExploitation); // Rafraîchir la liste des éléments
+      setNewElementName(""); // Réinitialiser le champ de saisie
+      setNewElementQuantity(0); // Réinitialiser la quantité
+    } catch (err) {
+      console.error("Erreur lors de la création de l'élément:", err);
+    }
+  };
+
+  // Créer une production
+  const createProduction = async () => {
+    try {
+      const response = await axios.post("http://127.0.0.1:5005/productions", {
+        element_id: selectedElement, // élément sélectionné
+        quantite_produite: newProductionQuantity,
+        date_de_production: newProductionDate, // exemple de date
+      });
+      console.log("Production créée", response.data);
+      fetchProductions(selectedElement); // Rafraîchir la liste des productions
+      setNewProductionQuantity(0); // Réinitialiser la quantité
+      setNewProductionDate(""); // Réinitialiser la date
+    } catch (err) {
+      console.error("Erreur lors de la création de la production:", err);
+    }
+  };
+
   // Configuration pour Chart.js
   const chartData = {
     labels: productions.map((prod) => prod.date_de_production), // Dates des productions
@@ -156,6 +212,21 @@ const Accueil = () => {
           </div>
         ))}
       </div>
+
+      {/* Formulaire pour ajouter une exploitation */}
+      {selectedDomain && (
+        <div className="form-container">
+          <h3>Ajouter une nouvelle exploitation</h3>
+          <input
+            type="text"
+            value={newExploitationName}
+            onChange={(e) => setNewExploitationName(e.target.value)}
+            placeholder="Nom de l'exploitation"
+          />
+          <button onClick={createExploitation}>Ajouter Exploitation</button>
+        </div>
+      )}
+
       {selectedDomain && (
         <div className="exploitations-container">
           <div className="exploitations-header">
@@ -181,6 +252,27 @@ const Accueil = () => {
           )}
         </div>
       )}
+
+      {/* Formulaire pour ajouter un élément */}
+      {selectedExploitation && (
+        <div className="form-container">
+          <h3>Ajouter un nouvel élément</h3>
+          <input
+            type="text"
+            value={newElementName}
+            onChange={(e) => setNewElementName(e.target.value)}
+            placeholder="Nom de l'élément"
+          />
+          <input
+            type="number"
+            value={newElementQuantity}
+            onChange={(e) => setNewElementQuantity(e.target.value)}
+            placeholder="Quantité de l'élément"
+          />
+          <button onClick={createElement}>Ajouter Élément</button>
+        </div>
+      )}
+
       {selectedExploitation && (
         <div className="elements-container">
           <div className="elements-header">
@@ -209,6 +301,25 @@ const Accueil = () => {
                 <p>Pas d'élément pour cette exploitation.</p>
               )}
             </div>
+
+            {/* Formulaire pour ajouter une production */}
+            {selectedElement && (
+              <div className="form-container">
+                <h3>Ajouter une production</h3>
+                <input
+                  type="number"
+                  value={newProductionQuantity}
+                  onChange={(e) => setNewProductionQuantity(e.target.value)}
+                  placeholder="Quantité produite"
+                />
+                <input
+                  type="date"
+                  value={newProductionDate}
+                  onChange={(e) => setNewProductionDate(e.target.value)}
+                />
+                <button onClick={createProduction}>Ajouter Production</button>
+              </div>
+            )}
             <div className="production-content">
               <h3>Production</h3>
               {productions.length > 0 ? (

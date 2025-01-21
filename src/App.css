@@ -414,7 +414,7 @@
   margin-bottom: 10px;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  width: 100%; /* Alignement uniforme */
+  width: 95%; /* Alignement uniforme */
 }
 
 /* Titre des sections */
@@ -453,5 +453,153 @@ h3 {
 .cancel-button-element:hover {
   background-color: #e05656; /* Couleur au survol */
   transform: scale(1.1);
+}
+
+/* Styles pour les formulaires */
+
+.form-container {
+  background-color: #ffffff; /* Fond blanc pour chaque formulaire */
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  margin-right: auto;
+}
+
+/* Formulaire d'ajout d'une exploitation */
+.form-container h3 {
+  font-size: 15px;
+  color: #4a7c59;
+  margin-bottom: 15px;
+  margin-right: auto;
+}
+
+/* Input fields */
+.form-container input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.form-container input[type="number"] {
+  -moz-appearance: textfield; /* Enlever la flèche sur les champs numériques */
+  appearance: textfield;
+}
+
+/* Button styles */
+.form-container button {
+  width: 100%;
+  padding: 12px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #68a07d;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.form-container button:hover {
+  background-color: #4a7c59; /* Changer la couleur au survol */
+}
+
+/* Styles pour la liste des éléments */
+.elements-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+.element-item {
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Styles pour les boutons de suppression */
+.cancel-button, .cancel-button-element {
+  background-color: #ff6b6b;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.cancel-button:hover, .cancel-button-element:hover {
+  background-color: #e05656;
+}
+
+.cancel-button-element {
+  position: absolute; /* Positionné dans la partie supérieure droite de .elements-container */
+  top: 10px;
+  right: 10px;
+}
+
+.cancel-button:hover {
+  transform: scale(1.05); /* Léger agrandissement au survol */
+}
+
+/* Styles généraux des formulaires */
+input[type="text"], input[type="number"], input[type="date"] {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  font-size: 16px;
+}
+
+.form-container {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Style pour les messages d'erreur */
+.error-message {
+  color: #d9534f;
+  font-size: 14px;
+  text-align: center;
+  margin-top: 10px;
+}
+
+/* Style pour les messages de succès */
+.success-message {
+  color: #4a7c59;
+  font-size: 14px;
+  text-align: center;
+  margin-top: 10px;
+}
+
+/* Alignement des champs dans le formulaire */
+.form-group {
+  margin-bottom: 15px;
+  width: 100%; /* Pour occuper toute la largeur du formulaire */
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #555;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
 }
 

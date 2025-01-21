@@ -22,7 +22,7 @@ const Connexion = () => {
       console.log("Connexion réussie", response.data);
 
       // Redirection vers la page d'accueil après succès
-      navigate("/accueil"); // Remplacez "/accueil" par le chemin de votre route Accueil
+      navigate("/acceuil"); // Remplacez "/accueil" par le chemin de votre route Accueil
     } catch (err) {
       console.error("Erreur lors de la connexion", err);
       setError("Email ou mot de passe incorrect");
