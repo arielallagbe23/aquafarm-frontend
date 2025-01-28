@@ -24,6 +24,15 @@ const Accueil = () => {
   const [error, setError] = useState(null);
 
   const [newExploitationName, setNewExploitationName] = useState(""); // Nouveau nom pour exploitation
+  const [showAddExploitationForm, setShowAddExploitationForm] = useState(false);
+
+  const [showAddElementForm, setShowAddElementForm] = useState(false); // Contrôle du formulaire d'ajout d'élément
+const [showAddProductionForm, setShowAddProductionForm] = useState(false); // Contrôle du formulaire d'ajout de production
+
+
+  const [showAddDomaineForm, setShowAddDomaineForm] = useState(false);
+  const [newDomaineName, setNewDomaineName] = useState("");
+
   const [newElementName, setNewElementName] = useState(""); // Nouveau nom pour élément
   const [newElementQuantity, setNewElementQuantity] = useState(0); // Quantité de l'élément
   const [newProductionQuantity, setNewProductionQuantity] = useState(0); // Quantité de production
@@ -33,27 +42,40 @@ const Accueil = () => {
     // Récupérer les informations de l'utilisateur
     const fetchUser = async () => {
       try {
-        const response = await axios.get("http://127.0.0.1:5005/users/1");
-        setUser(response.data);
+        const token = localStorage.getItem("token"); // Récupérer le token JWT depuis le localStorage
+    
+        const response = await axios.get("http://127.0.0.1:5005/users/user/connected", {
+          headers: {
+            Authorization: `Bearer ${token}`, // Inclure le token dans les en-têtes
+          },
+        });
+    
+        setUser(response.data); // Mettre à jour l'état utilisateur
       } catch (err) {
         console.error("Erreur lors de la récupération de l'utilisateur:", err);
         setError("Erreur lors de la récupération de l'utilisateur.");
       }
     };
+    
 
-    // Récupérer les domaines de l'utilisateur
     const fetchDomains = async () => {
+      const token = localStorage.getItem("token");
+  
       try {
-        const response = await axios.get("http://127.0.0.1:5005/domaines/user/1");
+        const response = await axios.get("http://127.0.0.1:5005/domaines/user", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         setDomains(response.data);
       } catch (err) {
         console.error("Erreur lors de la récupération des domaines:", err);
         setError("Erreur lors de la récupération des domaines.");
       }
     };
+    fetchDomains();
 
     fetchUser();
-    fetchDomains();
   }, []);
 
   // Récupérer les exploitations pour un domaine
@@ -118,6 +140,44 @@ const Accueil = () => {
     setElements([]);
     setProductions([]);
   };
+
+
+  const addDomaine = async () => {
+    const token = localStorage.getItem("token");
+    if (!newDomaineName.trim()) {
+      console.error("Le nom du domaine est vide !");
+      return;
+    }
+  
+    if (!user || !user.id) {
+      console.error("Impossible de récupérer l'utilisateur connecté !");
+      return;
+    }
+  
+    try {
+      const response = await axios.post(
+        "http://127.0.0.1:5005/domaines", // Endpoint correct
+        {
+          user_id: user.id, // Inclure l'ID de l'utilisateur connecté
+          nom_domaine: newDomaineName, // Nom du domaine
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Ajout du token d'authentification
+          },
+        }
+      );
+      console.log("Domaine ajouté avec succès:", response.data);
+      setDomains((prevDomains) => [...prevDomains, response.data]); // Ajouter le nouveau domaine à la liste
+      setNewDomaineName(""); // Réinitialiser le champ du formulaire
+      setShowAddDomaineForm(false); // Fermer le formulaire
+    } catch (error) {
+      console.error("Erreur lors de l'ajout du domaine:", error.response?.data || error);
+    }
+  };
+  
+  
+  
 
   // Créer une exploitation
   const createExploitation = async () => {
@@ -199,7 +259,37 @@ const Accueil = () => {
           Bonjour, {user.nom} {user.prenom} 👋
         </h1>
       )}
-      <h2>Voici vos domaines :</h2>
+
+      <button
+        className="adddomaine-button"
+        onClick={() => setShowAddDomaineForm(true)} // Affiche le formulaire
+      >
+        Ajouter un domaine
+      </button>
+
+      {showAddDomaineForm && (
+        <div className="form-container">
+          <h3>Ajouter un nouveau domaine</h3>
+          <input
+            type="text"
+            value={newDomaineName}
+            onChange={(e) => setNewDomaineName(e.target.value)}
+            placeholder="Nom du domaine"
+          />
+          <div className="form-container-buttons">
+            <button className="adddomaine-button" onClick={addDomaine}>
+              Ajouter Domaine
+            </button>
+            <button className="adddomaine-button button-cancel" onClick={() => setShowAddDomaineForm(false)}>
+              Annuler
+            </button>
+
+          </div>
+        </div>
+      )}
+
+
+      <h2>Mes domaines :</h2>
       {error && <p className="error-message">{error}</p>}
       <div className="domain-grid">
         {domains.map((domain) => (
@@ -215,17 +305,45 @@ const Accueil = () => {
 
       {/* Formulaire pour ajouter une exploitation */}
       {selectedDomain && (
-        <div className="form-container">
-          <h3>Ajouter une nouvelle exploitation</h3>
-          <input
-            type="text"
-            value={newExploitationName}
-            onChange={(e) => setNewExploitationName(e.target.value)}
-            placeholder="Nom de l'exploitation"
-          />
-          <button onClick={createExploitation}>Ajouter Exploitation</button>
-        </div>
-      )}
+          <>
+            {!showAddExploitationForm && (
+              <button 
+                className="adddomaine-button" 
+                onClick={() => setShowAddExploitationForm(true)} // Ouvre le formulaire
+              >
+                Ajouter une exploitation
+              </button>
+            )}
+
+            {showAddExploitationForm && (
+              <div className="form-container">
+                <h3>Ajouter une nouvelle exploitation</h3>
+                <input
+                  type="text"
+                  value={newExploitationName}
+                  onChange={(e) => setNewExploitationName(e.target.value)}
+                  placeholder="Nom de l'exploitation"
+                />
+                <div className="form-container-buttons-2">
+                  <button 
+                    className="adddomaine-button" 
+                    onClick={createExploitation}
+                  >
+                    Ajouter Exploitation
+                  </button>
+                  <button 
+                    className="button-cancel2" 
+                    onClick={() => setShowAddExploitationForm(false)} // Masque le formulaire
+                  >
+                    Annuler
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+
+
 
       {selectedDomain && (
         <div className="exploitations-container">
@@ -255,23 +373,53 @@ const Accueil = () => {
 
       {/* Formulaire pour ajouter un élément */}
       {selectedExploitation && (
-        <div className="form-container">
-          <h3>Ajouter un nouvel élément</h3>
-          <input
-            type="text"
-            value={newElementName}
-            onChange={(e) => setNewElementName(e.target.value)}
-            placeholder="Nom de l'élément"
-          />
-          <input
-            type="number"
-            value={newElementQuantity}
-            onChange={(e) => setNewElementQuantity(e.target.value)}
-            placeholder="Quantité de l'élément"
-          />
-          <button onClick={createElement}>Ajouter Élément</button>
-        </div>
+        <>
+          {!showAddElementForm && (
+            <button 
+              className="adddomaine-button" 
+              onClick={() => setShowAddElementForm(true)} // Affiche le formulaire
+            >
+              Ajouter un élément
+            </button>
+          )}
+
+          {showAddElementForm && (
+            <div className="form-container">
+              <h3>Ajouter un nouvel élément</h3>
+              <input
+                type="text"
+                value={newElementName}
+                onChange={(e) => setNewElementName(e.target.value)}
+                placeholder="Nom de l'élément"
+              />
+              <input
+                type="number"
+                value={newElementQuantity}
+                onChange={(e) => setNewElementQuantity(e.target.value)}
+                placeholder="Quantité de l'élément"
+              />
+              <div className="form-container-buttons">
+                <button
+                  className="add-element-button"
+                  onClick={() => {
+                    createElement(); // Appelle la fonction pour ajouter l'élément
+                    setShowAddElementForm(false); // Ferme le formulaire
+                  }}
+                >
+                  Ajouter Élément
+                </button>
+                <button
+                  className="cancel-element-button"
+                  onClick={() => setShowAddElementForm(false)} // Ferme le formulaire sans ajouter
+                >
+                  Annuler
+                </button>
+              </div>
+            </div>
+          )}
+        </>
       )}
+
 
       {selectedExploitation && (
         <div className="elements-container">

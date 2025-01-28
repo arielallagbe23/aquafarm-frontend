@@ -13,21 +13,27 @@ const Connexion = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null); // Reset error
-
+  
     try {
       const response = await axios.post("http://127.0.0.1:5005/login", {
         email: email,
         mot_de_passe: password,
       });
+  
       console.log("Connexion réussie", response.data);
-
+  
+      // Stocker le token dans le localStorage
+      const { token } = response.data;
+      localStorage.setItem("token", token);
+  
       // Redirection vers la page d'accueil après succès
-      navigate("/acceuil"); // Remplacez "/accueil" par le chemin de votre route Accueil
+      navigate("/acceuil");
     } catch (err) {
       console.error("Erreur lors de la connexion", err);
       setError("Email ou mot de passe incorrect");
     }
   };
+  
 
   return (
     <div className="connexion-container">
